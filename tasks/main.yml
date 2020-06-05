@@ -1,0 +1,44 @@
+- name: copy vyos-cli.list
+  copy:
+    src: vyos-cli.list
+    dest: /etc/apt/sources.list.d/vyos-cli.list
+    mode: 0644
+    owner: root
+    group: root
+
+- name: install gpg key
+  apt_key:
+    url: http://www.ginzado.ne.jp/~m-asama/vyos-cli/vyos-cli.gpg.key
+    state: present
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+   
+- name: install vyos-cli
+  apt:
+    name: vyos-cli
+
+- name: install vyos-cli
+  command: vyos-cli-setup
+
+#- name: debug
+#  debug:
+#    msg: "{{ ansible_default_ipv4.macaddress }}"
+#
+- name: execute vyos-cli-ethadd
+  command: "vyos-cli-ethadd {{ ansible_default_ipv4.macaddress }} eth0"
+
+- name: create vyos group
+  group:
+    name: vyos
+
+- name: create vyos user
+  user:
+    name: vyos
+    shell: /bin/vbash
+    groups: 
+    - sudo
+    - vyos
+    - frrvty
+    - vyattacfg
