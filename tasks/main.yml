@@ -19,15 +19,15 @@
   apt:
     name: vyos-cli
 
-- name: install vyos-cli
+- name: execute vyos-cli-setup
   command: vyos-cli-setup
 
 #- name: debug
 #  debug:
 #    msg: "{{ ansible_default_ipv4.macaddress }}"
 #
-- name: execute vyos-cli-ethadd
-  command: "vyos-cli-ethadd {{ ansible_default_ipv4.macaddress }} eth0"
+#- name: execute vyos-cli-ethadd
+#  command: "vyos-cli-ethadd {{ ansible_default_ipv4.macaddress }} eth0"
 
 - name: create vyos group
   group:
@@ -42,3 +42,27 @@
     - vyos
     - frrvty
     - vyattacfg
+
+- name: reboot machine
+  reboot:
+
+- name: disable cloud init
+  replace:
+    path: /etc/netplan/50-cloud-init.yaml
+    regexp: '^[^#](.*)'
+    replace: '# \1'
+  tags: test
+
+
+#
+#- name: "disable cloud-init's network configuration"
+#  copy:
+#    src: 99-disable-network-config.cfg
+#    dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+#    owner: root
+#    group: root
+#    mode: 0644
+
+- name: execute vyos-cli-ethadd
+  command: "vyos-cli-ethadd {{ ansible_default_ipv4.macaddress }} eth0"
+
